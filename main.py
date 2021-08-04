@@ -20,17 +20,24 @@ def select_person():
 def compare(followerA,followerB, user_choice):
     Amore = False
     Bmore = False 
+    Tie = False 
     if followerA > followerB:
         Amore = True 
     elif followerB > followerA:
         Bmore = True 
+    elif followerA == followerB: 
+        # Case when there's a tie - game keeps going but score isn't updated
+        Tie = True
+        correct_choice = False
+        return correct_choice, Tie 
     if (user_choice == "a" and Amore):
         correct_choice = True 
     elif (user_choice == "b" and Bmore):
         correct_choice = True 
     else: 
         correct_choice = False
-    return correct_choice 
+    return correct_choice,Tie 
+
 def reset_graphics():
     clear()
     print(logo)
@@ -38,20 +45,29 @@ def reset_graphics():
 nameA,followerA,descriptionA,countryA,dataA = select_person()
 nameB,followerB,descriptionB,countryB,dataB = select_person()
 while game_state:
-    print(f"Compare A: {nameA}, a {descriptionA}, from {countryA}, with {followerA} followers.")
+    print(f"Compare A: {nameA}, a {descriptionA}, from {countryA}.")
     print(vs)
-    print(f"Against B: {nameB}, a {descriptionB}, from {countryB}, with {followerB} followers.")
-    choice = input('who has more followers? Type "A" or "B": ').lower
-    correct_choice = compare(followerA=followerA,followerB=followerB,user_choice=choice)
+    print(f"Against B: {nameB}, a {descriptionB}, from {countryB}.")
+    choice = input('Who has more followers? Type "A" or "B": ').lower()
+    correct_choice,Tie = compare(followerA=followerA,followerB=followerB,user_choice=choice)
     if correct_choice:
         score+=1
         reset_graphics()
-        print("You're right! Current score: 1")
+        print(f"You're right! Current score: {score}.")
         nameA = nameB
         followerA = followerB
         descriptionA = descriptionB
         countryA = countryB 
         nameB,followerB,descriptionB,countryB,dataB = select_person()
+        if dataA == dataB: 
+            account_equal = True
+            while account_equal:
+                nameB,followerB,descriptionB,countryB,dataB = select_person()
+                if dataA != dataB:
+                    account_equal = False
+    elif Tie:
+        reset_graphics()
+        print(f"The number of followers are equal! The game is not over \n but your score remains the same.")
     else:
         reset_graphics()
         print(f"Sorry, that's wrong. Final score: {score}.")
